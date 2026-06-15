@@ -1,12 +1,20 @@
-[workspace]
-resolver = "3"
-members = ["purl-bin"]
+[package]
+name = "purl-bin"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "pURL"
+path = "src/main.rs"
+
+[dependencies]
+eframe = { version = "0.34.3", features = ["persistence"] }
+env_logger = { version = "0.11.10", features = ["auto-color", "humantime"] }
+serde = { version = "1.0.228", features = ["derive"] }
 
 [profile.release]
 panic = "abort"
 lto = true
-
-[profile.release.package.purl-bin]
 opt-level = "s"
 codegen-units = 1
 strip = true
