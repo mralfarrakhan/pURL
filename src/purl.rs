@@ -23,6 +23,8 @@ pub struct Purl {
 
 impl Purl {
     pub fn new(cc: &CreationContext<'_>) -> Self {
+        dbg!("eh");
+
         cc.storage
             .and_then(|s| get_value(s, APP_KEY))
             .map(|s| Self { state: s })
