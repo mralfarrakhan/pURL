@@ -1,3 +1,12 @@
 [workspace]
 resolver = "3"
 members = ["purl-bin"]
+
+[profile.release]
+panic = "abort"
+lto = true
+
+[profile.release.package.purl-bin]
+opt-level = "s"
+codegen-units = 1
+strip = true

@@ -1,7 +1,11 @@
 [package]
-name = "pURL"
+name = "purl-bin"
 version = "0.1.0"
 edition = "2024"
+
+[[bin]]
+name = "pURL"
+path = "src/main.rs"
 
 [dependencies]
 eframe = { version = "0.34.3", features = ["persistence"] }
