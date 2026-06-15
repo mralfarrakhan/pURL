@@ -30,8 +30,8 @@ impl Purl {
     }
 
     fn view_menu_button(&mut self, ui: &mut Ui) {
-        let explorer_shortcut = KeyboardShortcut::new(Modifiers::COMMAND, Key::E);
-        let console_shortcut = KeyboardShortcut::new(Modifiers::COMMAND, Key::R);
+        let explorer_shortcut = KeyboardShortcut::new(Modifiers::CTRL, Key::E);
+        let console_shortcut = KeyboardShortcut::new(Modifiers::CTRL, Key::Backtick);
 
         if ui.input_mut(|i| i.consume_shortcut(&explorer_shortcut)) {
             self.state.explorer_pane.open = !self.state.explorer_pane.open;
@@ -75,7 +75,9 @@ impl Purl {
     }
 }
 
-fn main_pane(_ui: &mut Ui) {}
+fn main_pane(ui: &mut Ui) {
+    ui.heading("pURL by mralfarrakhan");
+}
 
 impl App for Purl {
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
@@ -90,9 +92,29 @@ impl App for Purl {
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
                     ui.toggle_value(&mut self.state.explorer_pane.open, "Explorer");
                     ui.toggle_value(&mut self.state.console_pane.open, "Console");
-                })
+                });
             });
         });
+
+        if self.state.explorer_pane.open {
+            Panel::left("explorer_pane")
+                .resizable(true)
+                .default_size(200.0)
+                .size_range(100.0..=300.0)
+                .show_inside(ui, |ui| {
+                    self.state.explorer_pane.ui(ui);
+                });
+        }
+
+        if self.state.console_pane.open {
+            Panel::bottom("console_pane")
+                .resizable(true)
+                .default_size(200.0)
+                .size_range(100.0..=300.0)
+                .show_inside(ui, |ui| {
+                    self.state.console_pane.ui(ui);
+                });
+        }
 
         CentralPanel::default().show_inside(ui, |ui| {
             main_pane(ui);
