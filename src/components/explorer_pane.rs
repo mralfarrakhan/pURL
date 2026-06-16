@@ -1,4 +1,4 @@
-use eframe::egui::{ScrollArea, Ui};
+use eframe::egui::{Button, ScrollArea, Ui, Widget};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Deserialize, Serialize)]
@@ -8,9 +8,14 @@ pub struct ExplorerPane {
 
 impl ExplorerPane {
     pub fn ui(&mut self, ui: &mut Ui) {
-        ScrollArea::horizontal().show(ui, |ui| {
-            ui.label("meh");
-            if ui.button("Add").clicked() {}
+        ScrollArea::vertical().show(ui, |ui| {
+            ui.vertical_centered(|ui| {
+                if Button::new("Add")
+                    .min_size([ui.available_width(), 0.0].into())
+                    .ui(ui)
+                    .clicked()
+                {}
+            });
         });
     }
 }

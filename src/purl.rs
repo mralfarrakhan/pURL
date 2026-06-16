@@ -23,8 +23,6 @@ pub struct Purl {
 
 impl Purl {
     pub fn new(cc: &CreationContext<'_>) -> Self {
-        dbg!("eh");
-
         cc.storage
             .and_then(|s| get_value(s, APP_KEY))
             .map(|s| Self { state: s })
@@ -73,6 +71,12 @@ impl Purl {
             {
                 self.state.console_pane.open = !self.state.console_pane.open;
             }
+
+            ui.separator();
+
+            if ui.button("Reset Layout").clicked() {
+                ui.memory_mut(|mem| *mem = Default::default());
+            }
         });
     }
 }
@@ -102,8 +106,10 @@ impl App for Purl {
             Panel::left("explorer_pane")
                 .resizable(true)
                 .default_size(200.0)
-                .size_range(100.0..=300.0)
+                .size_range(180.0..=300.0)
                 .show_inside(ui, |ui| {
+                    ui.take_available_space();
+
                     self.state.explorer_pane.ui(ui);
                 });
         }
@@ -112,8 +118,10 @@ impl App for Purl {
             Panel::bottom("console_pane")
                 .resizable(true)
                 .default_size(200.0)
-                .size_range(100.0..=300.0)
+                .size_range(200.0..=400.0)
                 .show_inside(ui, |ui| {
+                    ui.take_available_space();
+
                     self.state.console_pane.ui(ui);
                 });
         }
