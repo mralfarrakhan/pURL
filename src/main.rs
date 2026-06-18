@@ -2,6 +2,7 @@
 
 mod components;
 mod purl;
+mod utilities;
 
 use std::error::Error;
 

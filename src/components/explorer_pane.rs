@@ -1,9 +1,25 @@
 use eframe::egui::{Button, ScrollArea, Ui, Widget};
 use serde::{Deserialize, Serialize};
 
-#[derive(Default, Deserialize, Serialize)]
+#[derive(Default)]
+pub struct EphemeralState {
+    pub active_add: bool,
+}
+
+#[derive(Deserialize, Serialize)]
 pub struct ExplorerPane {
     pub open: bool,
+    #[serde(skip)]
+    pub ephemeral_state: EphemeralState,
+}
+
+impl Default for ExplorerPane {
+    fn default() -> Self {
+        Self {
+            open: true,
+            ephemeral_state: Default::default(),
+        }
+    }
 }
 
 impl ExplorerPane {
@@ -14,7 +30,9 @@ impl ExplorerPane {
                     .min_size([ui.available_width(), 0.0].into())
                     .ui(ui)
                     .clicked()
-                {}
+                {
+                    self.ephemeral_state.active_add = true;
+                }
             });
         });
     }
