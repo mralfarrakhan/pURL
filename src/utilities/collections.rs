@@ -9,12 +9,7 @@ pub enum Item {
     Simple(Simple),
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Default, Deserialize, Serialize)]
 pub struct Collection {
     items: BTreeMap<String, Item>,
-}
-
-#[derive(Debug, Default, Deserialize, Serialize)]
-pub struct Collections {
-    collections: BTreeMap<String, Collection>,
 }

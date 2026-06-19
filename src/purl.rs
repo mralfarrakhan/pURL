@@ -1,4 +1,4 @@
-use std::ops::Not;
+use std::{collections::BTreeMap, ops::Not};
 
 use eframe::{
     APP_KEY, App, CreationContext,
@@ -12,19 +12,20 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     components::{console_pane::ConsolePane, explorer_pane::ExplorerPane},
-    utilities::collections::Collections,
+    utilities::collections::Collection,
 };
 
 #[derive(Default)]
 pub struct EphemeralState {
     pub new_collection_id: String,
+    pub new_collection_modal_focus: bool,
 }
 
 #[derive(Default, Deserialize, Serialize)]
 struct State {
     explorer_pane: ExplorerPane,
     console_pane: ConsolePane,
-    collections: Collections,
+    collections: BTreeMap<String, Collection>,
     #[serde(skip)]
     ephemeral_state: EphemeralState,
 }
@@ -103,11 +104,15 @@ impl Purl {
                 ui.separator();
 
                 ui.horizontal(|ui| {
-                    // let label = ui.label("Name");
-                    let name_edit =
+                    let output =
                         TextEdit::singleline(&mut self.state.ephemeral_state.new_collection_id)
-                            .hint_text("New Collection");
-                    name_edit.show(ui);
+                            .hint_text("New Collection")
+                            .show(ui);
+
+                    if self.state.ephemeral_state.new_collection_modal_focus {
+                        output.response.request_focus();
+                        self.state.ephemeral_state.new_collection_modal_focus = false;
+                    }
                 });
 
                 ui.separator();
@@ -132,8 +137,23 @@ impl Purl {
                                     .add(Button::new("Add").fill(Color32::DARK_GREEN))
                                     .clicked()
                                 {
-                                    self.state.explorer_pane.ephemeral_state.active_add = false;
-                                    self.state.ephemeral_state.new_collection_id.clear();
+                                    match self.state.collections.insert(
+                                        self.state
+                                            .ephemeral_state
+                                            .new_collection_id
+                                            .trim()
+                                            .to_owned(),
+                                        Default::default(),
+                                    ) {
+                                        Some(_) => {
+                                            let _ = dbg!("existing");
+                                        }
+                                        None => {
+                                            self.state.explorer_pane.ephemeral_state.active_add =
+                                                false;
+                                            self.state.ephemeral_state.new_collection_id.clear();
+                                        }
+                                    }
                                 }
                             },
                         )
@@ -149,6 +169,10 @@ fn main_pane(ui: &mut Ui) {
 }
 
 impl App for Purl {
+    fn on_exit(&mut self) {
+        dbg!(&self.state.collections);
+    }
+
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         set_value(storage, APP_KEY, &self.state);
     }
@@ -182,7 +206,9 @@ impl App for Purl {
                 .show_inside(ui, |ui| {
                     ui.take_available_space();
 
-                    self.state.explorer_pane.ui(ui);
+                    if self.state.explorer_pane.ui(ui) {
+                        self.state.ephemeral_state.new_collection_modal_focus = true;
+                    }
                 });
         }
 

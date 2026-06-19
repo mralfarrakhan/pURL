@@ -23,7 +23,8 @@ impl Default for ExplorerPane {
 }
 
 impl ExplorerPane {
-    pub fn ui(&mut self, ui: &mut Ui) {
+    pub fn ui(&mut self, ui: &mut Ui) -> bool {
+        let mut add_clicked = false;
         ScrollArea::vertical().show(ui, |ui| {
             ui.vertical_centered(|ui| {
                 if Button::new("Add")
@@ -32,8 +33,10 @@ impl ExplorerPane {
                     .clicked()
                 {
                     self.ephemeral_state.active_add = true;
+                    add_clicked = true;
                 }
             });
         });
+        add_clicked
     }
 }
